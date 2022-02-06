@@ -2,6 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:simpleclub_challenge/data/models/content_response_entity.dart';
 import 'package:simpleclub_challenge/data/repository/content_repository.dart';
+import 'package:simpleclub_challenge/presentation/models/item_model.dart';
+import 'package:simpleclub_challenge/presentation/models/page_model.dart';
+import 'package:simpleclub_challenge/utils/app_extensions.dart';
 
 /// Loads simpleclub's test challenge content from API via [ContentRepository]
 class ContentCubit extends Cubit<ContentState> {
@@ -10,7 +13,24 @@ class ContentCubit extends Cubit<ContentState> {
   final ContentRepository _contentRepository;
 
   Future<void> loadContent({required String contentId}) async {
-
+    emit(state.toLoading(contentId));
+    try {
+      ContentResponseEntity response = await _contentRepository.fetchContent(contentId: contentId);
+      List<PageModel> pages = response.pages.map((e) => PageModel(id: e.id, title: e.title, itemId: e.itemId)).toList();
+      List<ItemModel> items = response.items
+          .map((e) => ItemModel(
+              id: e.id,
+              title: e.title,
+              imageUrl: e.imageUrl,
+              body: e.body,
+              source: e.source,
+              page: pages.firstWhereOrNull((page) => e.id == page.itemId)))
+          .toList();
+      pages = pages.map((page) => page.copyWith(itemModel: items.firstWhereOrNull((item) => item.id == page.itemId))).toList();
+      emit(state.toSuccess(pages, items));
+    } catch (ex) {
+      emit(state.toError());
+    }
   }
 }
 
@@ -22,12 +42,12 @@ class ContentState extends Equatable {
   final ContentStateType stateType;
 
   final String? contentId;
-  final List<PageEntity>? pages;
-  final List<ItemEntity>? items;
+  final List<PageModel>? pages;
+  final List<ItemModel>? items;
 
-  ContentState toLoading() => copyWith(stateType: ContentStateType.loading);
+  ContentState toLoading(String contentId) => copyWith(stateType: ContentStateType.loading, contentId: contentId);
 
-  ContentState toSuccess(List<PageEntity> pages, List<ItemEntity> items) =>
+  ContentState toSuccess(List<PageModel> pages, List<ItemModel> items) =>
       copyWith(stateType: ContentStateType.success, pages: pages, items: items);
 
   ContentState toError() => copyWith(stateType: ContentStateType.error);
@@ -35,7 +55,7 @@ class ContentState extends Equatable {
   @override
   List<Object?> get props => [stateType, contentId, pages, items];
 
-  ContentState copyWith({ContentStateType? stateType, String? contentId, List<PageEntity>? pages, List<ItemEntity>? items}) => ContentState(
+  ContentState copyWith({ContentStateType? stateType, String? contentId, List<PageModel>? pages, List<ItemModel>? items}) => ContentState(
       stateType: stateType ?? this.stateType,
       contentId: contentId ?? this.contentId,
       pages: pages ?? this.pages,

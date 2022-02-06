@@ -1,63 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:simpleclub_challenge/presentation/routing/app_router.dart';
+import 'package:simpleclub_challenge/presentation/utils/ui_utils.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  static const appRouter = AppRouter();
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Simpleclub Challenge',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: const Color(0xFF111E26),
+          backgroundColor: Color(0xFFF9F9F9),
+          colorScheme: const ColorScheme(
+            primary: Color(0xFF111E26),
+            primaryVariant: Color(0xFF111E26),
+            secondary: Color(0xFF111E26),
+            secondaryVariant: Color(0xFF111E26),
+            background: Colors.white,
+            surface: Colors.white,
+            onBackground: Color(0xFF111E26),
+            error: Color(0xFFD24848),
+            onError: Colors.white,
+            onPrimary: Colors.white,
+            onSecondary: Colors.white,
+            onSurface: Color(0xFF111E26),
+            brightness: Brightness.light,
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+        onGenerateRoute: appRouter.generateRoute,
+        initialRoute: contentSetupRouteName,
+        builder: (context, child) {
+          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
+          return ScrollConfiguration(behavior: NoGlowScrollBehavior(), child: child!);
+        },
+      );
 }

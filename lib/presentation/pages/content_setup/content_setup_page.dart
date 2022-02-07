@@ -28,7 +28,7 @@ class _ContentSetupPageState extends State<ContentSetupPage> {
     super.initState();
     _contentCubit = context.read();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 300));
       _contentIdFocus.requestFocus();
     });
   }
@@ -60,6 +60,7 @@ class _ContentSetupPageState extends State<ContentSetupPage> {
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             body: SafeArea(
+              bottom: false,
               child: BlocBuilder(
                 bloc: _contentCubit,
                 builder: (context, ContentState contentState) => Padding(

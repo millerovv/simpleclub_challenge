@@ -35,6 +35,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
           body: SafeArea(
         child: BlocBuilder(
@@ -45,26 +52,23 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverOverlapAbsorber(
                 handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                sliver: _buildAppBar(contentState, forceElevated: innerBoxIsScrolled),
+                sliver: _buildAppBar(contentState),
               ),
             ],
             body: TabBarView(
               controller: _tabController,
-              children: contentState.pages!
-                  .where((p) => p.itemModel != null)
-                  .map((p) => TabPageView(key: ValueKey('tab_page_view_${p.id}_${p.itemId}'), page: p, item: p.itemModel!))
-                  .toList(),
+              children: contentState.pages!.where((p) => p.itemModel != null).map((p) => TabPageView(page: p, item: p.itemModel!)).toList(),
             ),
           ),
         ),
       ));
 
-  Widget _buildAppBar(ContentState contentState, {bool forceElevated = false}) {
+  Widget _buildAppBar(ContentState contentState) {
     assert(contentState.stateType == ContentStateType.success);
     return SliverPersistentHeader(
         pinned: true,
         delegate: AppBarSliverDelegate(
-            height: 108,
+            height: 105,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -87,6 +91,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     tabController: _tabController),
               ],
             ),
-            forceElevated: forceElevated));
+            forceElevated: true));
   }
 }

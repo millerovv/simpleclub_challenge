@@ -36,8 +36,6 @@ class ItemInfoViewState extends State<ItemInfoView> {
   Widget build(BuildContext context) => Material(
         color: Theme.of(context).backgroundColor,
         child: SingleChildScrollView(
-          // todo: зацени как в эрмитаже сделан список сделок на экране деталки инструмета
-          // physics: const NeverScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(

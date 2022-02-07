@@ -6,6 +6,7 @@ import 'package:simpleclub_challenge/presentation/models/page_model.dart';
 import 'package:simpleclub_challenge/presentation/pages/home/item_info_view.dart';
 import 'package:simpleclub_challenge/presentation/routing/tab_page_router.dart';
 
+/// This view contains [Navigator] that lets us perform nested navigation to other items by tapping on [item.body] links
 class TabPageView extends StatefulWidget {
   const TabPageView({Key? key, required this.page, required this.item}) : super(key: key);
 
@@ -37,19 +38,14 @@ class _TabPageViewState extends State<TabPageView> with AutomaticKeepAliveClient
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return CustomScrollView(
-      key: PageStorageKey<String>('tab_page_view_scroll_view_${widget.page.id}'),
-      physics: const NeverScrollableScrollPhysics(),
-      slivers: [
-        SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-        SliverFillRemaining(
-            child: WillPopScope(
-                onWillPop: () async {
-                  bool? result = await itemInfoViewKey.currentState?.maybePop();
-                  return result != null ? !result : true;
-                },
-                child: Navigator(onGenerateRoute: _tabPageRouter.generateTabRoute, initialRoute: widget.item.itemInfoViewRoute))),
-      ],
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          bool? result = await itemInfoViewKey.currentState?.maybePop();
+          return result != null ? !result : true;
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 110),
+          child: Navigator(onGenerateRoute: _tabPageRouter.generateTabRoute, initialRoute: widget.item.itemInfoViewRoute),
+        ));
   }
 }

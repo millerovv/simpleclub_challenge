@@ -1,3 +1,3 @@
 # simpleclub_challenge
 
-Simpleclub interview test task
+Simpleclub test task on navigating dynamic content

@@ -23,7 +23,7 @@ class AppBarSliverDelegate extends SliverPersistentHeaderDelegate {
         begin: BoxDecoration(color: Theme.of(context).backgroundColor, boxShadow: const []),
         end: BoxDecoration(
             color: Theme.of(context).backgroundColor,
-            boxShadow: const [BoxShadow(color: Color(0x1F000000), offset: Offset(0, 2), blurRadius: 6)]));
+            boxShadow: [BoxShadow(color: Colors.black.withAlpha(50), offset: const Offset(0, 6), blurRadius: 12)]));
 
     return AnimatedContainer(
       duration: forceElevated && !forceZeroAnimation ? const Duration(milliseconds: 300) : const Duration(),

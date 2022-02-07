@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleclub_challenge/presentation/models/item_model.dart';
 import 'package:simpleclub_challenge/presentation/pages/home/item_info_view.dart';
+import 'package:simpleclub_challenge/presentation/theme/app_theme.dart';
 import 'package:simpleclub_challenge/utils/app_extensions.dart';
 
 const itemInfoViewRouteName = 'tabPageRoute';
 
 class TabPageRouter {
-  TabPageRouter(this.baseItem, this.items);
+  TabPageRouter(this.baseItemViewKey, this.baseItem, this.items);
 
+  final GlobalKey<ItemInfoViewState> baseItemViewKey;
   final ItemModel baseItem;
   final List<ItemModel> items;
 
@@ -21,20 +23,24 @@ class TabPageRouter {
         debugPrint('${settings.arguments != null} ${settings.arguments}');
         if (settings.arguments != null && settings.arguments is ItemInfoViewArgs) {
           openedFromItem = (settings.arguments as ItemInfoViewArgs).openedFromItem;
-          debugPrint('openedFromItem = $openedFromItem');
         }
-        return CupertinoPageRoute(builder: (_) => ItemInfoView(item: itemModel, openedFromItem: openedFromItem), fullscreenDialog: true);
+        return CupertinoPageRoute(
+            builder: (_) => ItemInfoView(
+                key: itemModel == baseItem ? baseItemViewKey : ValueKey('item_info_view_${itemModel.id}'),
+                item: itemModel,
+                openedFromItem: openedFromItem),
+            fullscreenDialog: true);
       }
     }
     return CupertinoPageRoute(
         builder: (context) => Container(
-            color: Color(0xFFF9F9F9),
+            color: backgroundColor,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Item not found'),
+                const Text('Item not found'),
                 const SizedBox(height: 16),
-                ElevatedButton(onPressed: () => Navigator.pop(context), child: Text('Return')),
+                ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Return')),
               ],
             )),
         fullscreenDialog: true);

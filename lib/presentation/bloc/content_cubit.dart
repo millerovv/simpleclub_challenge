@@ -13,20 +13,24 @@ class ContentCubit extends Cubit<ContentState> {
   final ContentRepository _contentRepository;
 
   Future<void> loadContent({required String contentId}) async {
+    if (state.stateType == ContentStateType.success && state.contentId == contentId) {
+      final successState = state;
+      emit(state.toLoading(contentId));
+      return emit(successState);
+    }
     emit(state.toLoading(contentId));
     try {
       ContentResponseEntity response = await _contentRepository.fetchContent(contentId: contentId);
-      List<PageModel> pages = response.pages.map((e) => PageModel(id: e.id, title: e.title, itemId: e.itemId)).toList();
-      List<ItemModel> items = response.items
-          .map((e) => ItemModel(
-              id: e.id,
-              title: e.title,
-              imageUrl: e.imageUrl,
-              body: e.body,
-              source: e.source,
-              page: pages.firstWhereOrNull((page) => e.id == page.itemId)))
+      List<ItemModel> items =
+          response.items.map((e) => ItemModel(id: e.id, title: e.title, imageUrl: e.imageUrl, body: e.body, source: e.source)).toList();
+      List<PageModel> pages = response.pages
+          .map((p) => PageModel(
+                id: p.id,
+                title: p.title,
+                itemId: p.itemId,
+                itemModel: items.firstWhereOrNull((i) => i.id == p.itemId),
+              ))
           .toList();
-      pages = pages.map((page) => page.copyWith(itemModel: items.firstWhereOrNull((item) => item.id == page.itemId))).toList();
       emit(state.toSuccess(pages, items));
     } catch (ex) {
       emit(state.toError());

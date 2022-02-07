@@ -67,46 +67,23 @@ class _ContentSetupPageState extends State<ContentSetupPage> {
                   child: IgnorePointer(
                     ignoring: contentState.stateType == ContentStateType.loading,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Spacer(),
-                        Form(
-                          key: _formKey,
-                          child: TextFormField(
-                            controller: _contentIdFieldController,
-                            focusNode: _contentIdFocus,
-                            onFieldSubmitted: (_) => _onLoadTap(),
-                            validator: (text) => text == null || text.trim().isEmpty ? 'Please enter Content ID' : null,
-                            decoration: const InputDecoration(labelText: 'Content ID'),
-                          ),
-                        ),
+                        const Text('Please enter ID of the content that you would like to test'),
+                        const SizedBox(height: 24),
+                        _buildForm(),
                         if (contentState.stateType == ContentStateType.error)
                           Padding(
-                            padding: EdgeInsets.only(top: 8),
+                            padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               'Failed to load content. Change your ID or try again later',
-                              style: Theme.of(context).textTheme.bodyText2?.copyWith(color: Color(0xFFD24848)),
+                              style: Theme.of(context).textTheme.bodyText2?.copyWith(color: const Color(0xFFD24848)),
                             ),
                           ),
                         const SizedBox(height: 24),
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AnimatedOpacity(
-                              duration: const Duration(milliseconds: 300),
-                              opacity: contentState.stateType == ContentStateType.loading ? 0.5 : 1.0,
-                              child: ElevatedButton(
-                                child: const Text('Load'),
-                                onPressed: _onLoadTap,
-                                style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
-                              ),
-                            ),
-                            if (contentState.stateType == ContentStateType.loading)
-                              const Align(
-                                  alignment: Alignment.center,
-                                  child: SizedBox(
-                                      height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))),
-                          ],
-                        ),
+                        _buildLoadButton(contentState),
+                        const SizedBox(height: 24),
                         const Spacer(flex: 2),
                       ],
                     ),
@@ -115,4 +92,37 @@ class _ContentSetupPageState extends State<ContentSetupPage> {
               ),
             )),
       );
+
+  Widget _buildForm() => Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _contentIdFieldController,
+          focusNode: _contentIdFocus,
+          onFieldSubmitted: (_) => _onLoadTap(),
+          validator: (text) => text == null || text.trim().isEmpty ? 'Please enter Content ID' : null,
+          decoration: const InputDecoration(labelText: 'Content ID'),
+        ),
+      );
+
+  Widget _buildLoadButton(ContentState contentState) {
+    bool isLoading = contentState.stateType == ContentStateType.loading;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          opacity: isLoading ? 0.5 : 1.0,
+          child: ElevatedButton(
+            child: const Text('Load'),
+            onPressed: _onLoadTap,
+            style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+          ),
+        ),
+        if (isLoading)
+          const Align(
+              alignment: Alignment.center,
+              child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))),
+      ],
+    );
+  }
 }
